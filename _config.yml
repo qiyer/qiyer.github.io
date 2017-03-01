@@ -1,9 +1,9 @@
 # Site settings
 title: Qiye Blog
-SEOTitle: 七夜的博客 | Qiye Blog
+SEOTitle: 七夜的博客 | Qiye's Blog
 header-img: img/home-bg.jpg
 email: justqiye@163.com
-description: "关于前端与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Front-End Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。"
+description: "关于前端与设计、黑客与画家 | 七夜，Web & Mobile Lover，Front-End Engineer，UX Designer | 这里是 @qiye 的个人博客，与你一起发现更大的世界。"
 keyword: "七夜, qiye, 七夜的博客, Qiye Blog, 博客, 个人网站, 互联网, 移动互联网, 设计, 产品, iOS, Cocos2d-x, 移动开发"
 url: "https://qiyer.github.io"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
@@ -51,7 +51,7 @@ kramdown:
 #disqus_username: _your_disqus_short_name_
 
 # Duoshuo settings
-duoshuo_username: qiyeblog
+duoshuo_username: qiyes
 # Share component is depend on Comment so we can NOT use share only.
 duoshuo_share: true                     # set to false if you want to use Comment without Sharing
 
@@ -63,8 +63,8 @@ duoshuo_share: true                     # set to false if you want to use Commen
 # ba_track_id: [your track id]
 
 # Google Analytics
-ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
-ga_domain: huangxuan.me
+ga_track_id: 'UA-92827545-1'            # Format: UA-xxxxxx-xx
+ga_domain: imqiye.com
 
 
 
