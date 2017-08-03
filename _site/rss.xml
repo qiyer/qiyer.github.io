@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+        <title>七夜Blog</title>
+        <description>七夜Blog - 七夜</description>
+        <link>http://imqiye.com</link>
+        <link>http://imqiye.com</link>
+        <lastBuildDate>2017-08-03T11:56:15+08:00</lastBuildDate>
+        <pubDate>2017-08-03T11:56:15+08:00</pubDate>
+        <ttl>1800</ttl>
+
+
+        <item>
+                <title>收藏颜色</title>
+                <description>
+&lt;h1 id=&quot;收藏颜色的工具&quot;&gt;收藏颜色的工具&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;&lt;img src=&quot;http://enml.github.io/blog/image/collect_color.jpg&quot; alt=&quot;collect_color&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;用了三个小时完成了上图的功能，满足了我的需求。&lt;/p&gt;
+
+&lt;p&gt;只要在输入框输入颜色数值，便可记录到数据库，并把颜色作为该数值背景色输出页面。&lt;/p&gt;
+
+&lt;!--break--&gt;
+
+&lt;p&gt;本来是在寻找一个可以保存自己喜欢的颜色的工具，一开始想着记录在onenote，但是只能记录数值，不够直观。如果把图片粘贴过去会很繁琐并且不够雅观。后来把颜色直接合并在一张图上，但记录时每次都需要进行图片修改，繁琐也依然不美观。中午午睡后百度了一下是否有相关的在线工具，一无所获。突然想着要不自己搞一个吧！在脑海里构建了一下基本框架后觉得可行，便开始编写代码。花了三个小时总算实现了。&lt;/p&gt;
+
+</description>
+                <link>http://imqiye.com/2014/05/20/collect_color</link>
+                <guid>http://imqiye.com/2014/05/20/collect_color</guid>
+                <pubDate>2014-05-20T00:00:00+08:00</pubDate>
+        </item>
+
+        <item>
+                <title>Template</title>
+                <description>
+&lt;h1 id=&quot;template&quot;&gt;Template&lt;/h1&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;&lt;strong&gt;在view里面，我们获取了相关的数据，但我们的目的是将数据呈现出来。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;于是：&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1.首先我们想到的是直接把数据硬编码到html代码里面，然后通过&lt;code&gt;HttpResponse&lt;/code&gt;对象传递给浏览器进行渲染：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;from django.http import HttpResponse
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    html = &quot;&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;It is now %s.&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&quot; % now
+    return HttpResponse(html)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!--break--&gt;
+
+&lt;p&gt;但是很明显这种方法不适合生产环境，你不可能把整个html页面都硬编码在view里面，因为这显得既愚蠢又低效。对于template的改动很明显要比view频繁得多，这种方式意味着你想更改页面表现时都必须得改动python代码，并且前后端无法同步开发。于是有了第二种方式：&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2.把html代码分离成独立的模板，通过加载模板文件进行渲染，这样可以实现前后端分离：&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;   #view
+from django.shortcuts import render_to_response
+import datetime
+
+def current_datetime(request):
+    now = datetime.datetime.now()
+    return render_to_response('current_datetime.html', {'current_date': now})
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;#template
+&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;It is now .&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;通过render()传递数据给template的方式在上一篇文章有列举出来。这种模式的好处很明显。但我们又遇到一个问题：&lt;strong&gt;假如我的网站有100个页面，那我是不是要写100个template呢？&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;我们知道这样是愚蠢。编程中有一个很重要的思想就是–&lt;strong&gt;最大限度地实现代码重用。&lt;/strong&gt; 而我们写100个页面的重复代码可能已经超过40%了，这不但费时费力，你还可能见笑于大方之家。所以我们有一种优雅的解决方式：&lt;strong&gt;include&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;(1). 把重用代码分离出来，比如header.html,footer.html,sidebar.html；然后&lt;code&gt;include&lt;/code&gt;到content.html中。&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# header.html
+
+&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
+&amp;lt;html lang=&quot;en&quot;&amp;gt;
+&amp;lt;head&amp;gt;
+    &amp;lt;title&amp;gt;The current time&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;    # footer.html
+
+        &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
+    &amp;lt;/body&amp;gt;
+    &amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;# include 'header' and 'footer'
+
+{ include 'header.html' %}
+&amp;lt;body&amp;gt;
+    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
+    &amp;lt;p&amp;gt;It is now .&amp;lt;/p&amp;gt;
+{ include 'footer.html' %}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;没错，这样很优雅，可以实现代码重用。但是仍然有个问题：当代码中存在哪怕一个标记不同时，这部分代码你就无法分离出来，这导致了你仍然需要重复大量的代码。比如：&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;# first page
+
+&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
+&amp;lt;html lang=&quot;en&quot;&amp;gt;
+&amp;lt;head&amp;gt;
+    &amp;lt;title&amp;gt;The current time&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
+    &amp;lt;p&amp;gt;It is now .&amp;lt;/p&amp;gt;
+
+    &amp;lt;hr&amp;gt;
+    &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;# second page
+
+&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
+&amp;lt;html lang=&quot;en&quot;&amp;gt;
+&amp;lt;head&amp;gt;
+    &amp;lt;title&amp;gt;Future time&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
+    &amp;lt;p&amp;gt;In  hour(s), it will be .&amp;lt;/p&amp;gt;
+
+    &amp;lt;hr&amp;gt;
+    &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这两个页面中&lt;code&gt;&amp;lt;title&amp;gt;&lt;/code&gt;不同，意味着&lt;code&gt;&amp;lt;title&amp;gt;&lt;/code&gt;以下的部分都不能并入&lt;code&gt;header.html&lt;/code&gt;中，哪怕下面仍然存在大量的重复代码。所以有了更优雅的解决办法：&lt;strong&gt;extends&lt;/strong&gt; – inculde的逆向思维。&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;(2). 我们把模板里面的‘不同代码’进行定义，相同的代码保存为base模板&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
+&amp;lt;html lang=&quot;en&quot;&amp;gt;
+&amp;lt;head&amp;gt;
+    &amp;lt;title&amp;gt;{ block title %}{ endblock %}&amp;lt;/title&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt;
+    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
+    { block content %}{ endblock %}
+    { block footer %}
+    &amp;lt;hr&amp;gt;
+    &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
+    { endblock %}
+&amp;lt;/body&amp;gt;
+&amp;lt;/html&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;此时&lt;code&gt;base.html&lt;/code&gt;变成了一个骨架，你可以把需要的内容填充进去即可，这最大限度实现了代码重用。&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    # first page
+
+    { extends &quot;base.html&quot; %}
+
+    { block title %}The current time{ endblock %}
+
+    { block content %}
+    &amp;lt;p&amp;gt;It is now .&amp;lt;/p&amp;gt;
+    { endblock %}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;    # second page
+
+    { extends &quot;base.html&quot; %}
+
+    { block title %}Future time{ endblock %}
+
+    { block content %}
+    &amp;lt;p&amp;gt;In  hour(s), it will be .&amp;lt;/p&amp;gt;
+    { endblock %}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;woo! 简单优雅！这是Template设计的思想历程。&lt;/p&gt;
+</description>
+                <link>http://imqiye.com/2014/05/10/template</link>
+                <guid>http://imqiye.com/2014/05/10/template</guid>
+                <pubDate>2014-05-10T00:00:00+08:00</pubDate>
+        </item>
+
+        <item>
+                <title>view传递context的方式</title>
+                <description>
+&lt;h1 id=&quot;view传递context的方式&quot;&gt;view传递context的方式&lt;/h1&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;** 通过view的render()方法填充template可以有以下方式：**&lt;/p&gt;
+
+&lt;p&gt;1.适合于数据量小且静态的数据。在template中直接使用相关键值为标签：
+` `&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def test1(request):
+    return render(request,'test/raw.htm',{
+                'name':'Enm',
+                'age':22,
+                'company': 'Outdoor Equipment',
+                'ship_date': datetime.datetime.now(),
+                'ordered_warranty': False})
+&lt;/code&gt;&lt;/pre&gt;
+&lt;!--break--&gt;
+
+&lt;p&gt;2.通过调用属性的方式传递整个dictionary。但在template中必须使用属性方式：{{ &lt;strong&gt;person.&lt;/strong&gt; name }},{\% for i,k in &lt;strong&gt;dict.&lt;/strong&gt; items \%}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def test2():
+    person = {  'name':'Enm',
+                'age':22,
+                'company': 'Outdoor Equipment',
+                'ship_date': datetime.datetime.now(),
+                'ordered_warranty': False}
+    
+    dict = {&quot;name&quot;:&quot;enm&quot;,&quot;age&quot;:&quot;21&quot;,&quot;school&quot;:&quot;szu&quot;}
+    return render(request,'test/raw.htm',{ 'person':person, 'dict':dict})
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;3.使用&lt;strong&gt;locals(),locals()&lt;/strong&gt; 是个字典，直接赋值给变量。很明显这种方式更加优雅和便捷，但缺点就是它会把所有的dictionary都传递，也就是说它默认传递的值可能会比你预想中的多。&lt;/p&gt;
+
+&lt;p&gt;template中仍然必须使用属性方式：{{ &lt;strong&gt;person.&lt;/strong&gt; name }},{\% for i,k in &lt;strong&gt;dict.&lt;/strong&gt; items \%}&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def test3():
+    person = {  'name': 'Enm',
+                'age':22,
+                'company': 'Outdoor Equipment',
+                'ship_date': datetime.datetime.now(),
+                'ordered_warranty': False}
+    
+    dict = {&quot;name&quot;:&quot;enm&quot;,&quot;age&quot;:&quot;21&quot;,&quot;school&quot;:&quot;szu&quot;}
+    return render(request,'test/raw.htm',locals())
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+                <link>http://imqiye.com/2014/05/03/view_render</link>
+                <guid>http://imqiye.com/2014/05/03/view_render</guid>
+                <pubDate>2014-05-03T00:00:00+08:00</pubDate>
+        </item>
+
+        <item>
+                <title>压测工具</title>
+                <description>
+&lt;h1 id=&quot;压测工具&quot;&gt;压测工具&lt;/h1&gt;
+&lt;hr /&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;首先下载&lt;code&gt;ruby&lt;/code&gt;&lt;a href=&quot;http://rubyinstaller.org/downloads/&quot;&gt;安装ruby download&lt;/a&gt; ，然后下载&lt;strong&gt;DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe&lt;/strong&gt;。安装完&lt;code&gt;ruby&lt;/code&gt;后，再安装&lt;code&gt;rubyGems&lt;/code&gt;:运行&lt;code&gt;gem update --system&lt;/code&gt;即可。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;解压DevKit，然后命令行cd到该目录，运行&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--break--&gt;
+
+&lt;pre&gt;&lt;code&gt; ruby dk.rb init
+ ruby dk.rb review 
+ ruby dk.rb install
+ gem install rdiscount --platform=ruby
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;DevKit安装完后，即可安装jekyll：&lt;code&gt;gem install jekyll&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+                <link>http://imqiye.com/2014/04/27/install-jekyll</link>
+                <guid>http://imqiye.com/2014/04/27/install-jekyll</guid>
+                <pubDate>2014-04-27T00:00:00+08:00</pubDate>
+        </item>
+
+        <item>
+                <title>常用的命令</title>
+                <description>
+&lt;h1 id=&quot;坑&quot;&gt;坑&lt;/h1&gt;
+&lt;hr /&gt;
+
+</description>
+                <link>http://imqiye.com/2014/04/25/python-code</link>
+                <guid>http://imqiye.com/2014/04/25/python-code</guid>
+                <pubDate>2014-04-25T00:00:00+08:00</pubDate>
+        </item>
+
+        <item>
+                <title>iOS & Android热更新方案</title>
+                <description>
+&lt;h1 id=&quot;ios热更新方案&quot;&gt;iOS热更新方案&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;　占坑&lt;/p&gt;
+
+&lt;!--break--&gt;
+
+&lt;h1 id=&quot;android热更新方案&quot;&gt;Android热更新方案&lt;/h1&gt;
+&lt;hr /&gt;
+&lt;p&gt;　占坑&lt;/p&gt;
+
+&lt;!--break--&gt;
+</description>
+                <link>http://imqiye.com/2014/04/24/directory</link>
+                <guid>http://imqiye.com/2014/04/24/directory</guid>
+                <pubDate>2014-04-24T00:00:00+08:00</pubDate>
+        </item>
+
+        <item>
+                <title>关于blog</title>
+                <description>
+&lt;h1 id=&quot;关于blog&quot;&gt;关于blog&lt;/h1&gt;
+&lt;hr /&gt;
+
+&lt;p&gt;　一直有想法搞个个人博客，无奈，没有时间整理（可能是太懒了）。好容易下了决心买了域名，选了几个模块但还是耽搁没继续下去，于是乎拖到了现在。目前最大的问题是把写在其它平台的blog迁移回来：&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;迁移工作只能看时间了，尽量把一些质量高的blog迁移回来。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!--break--&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;尽可能每个月出一些出彩的分享blog。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;除了技术方面的，也拓展一些生活上面的，比如篮球啊、钓鱼啊、电影美剧啊、电竞啊 等。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;搞搞一些有意思的开源项目 或是 个人APP。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;最后一条就是尽量实现上面的，另外就是多健身，跑步。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+                <link>http://imqiye.com/2014/04/23/finish-jekyll</link>
+                <guid>http://imqiye.com/2014/04/23/finish-jekyll</guid>
+                <pubDate>2014-04-23T00:00:00+08:00</pubDate>
+        </item>
+
+
+</channel>
+</rss>
