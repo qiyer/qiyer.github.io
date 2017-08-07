@@ -160,16 +160,17 @@
 
 <p>于是：</p>
 
-<p><strong>1.首先我们想到的是直接把数据硬编码到html代码里面，然后通过<code>HttpResponse</code>对象传递给浏览器进行渲染：</strong></p>
+<p><strong>1.首先我们想到的是直接把数据硬编码到html代码里面，然后通过<code class="highlighter-rouge">HttpResponse</code>对象传递给浏览器进行渲染：</strong></p>
 
-<pre><code>from django.http import HttpResponse
+<div class="highlighter-rouge"><pre class="highlight"><code>from django.http import HttpResponse
 import datetime
 
 def current_datetime(request):
     now = datetime.datetime.now()
-    html = "&lt;html&gt;&lt;body&gt;It is now %s.&lt;/body&gt;&lt;/html&gt;" % now
+    html = "<span class="nt">&lt;html&gt;&lt;body&gt;</span>It is now %s.<span class="nt">&lt;/body&gt;&lt;/html&gt;</span>" % now
     return HttpResponse(html)
 </code></pre>
+</div>
 
 	<div class="read_more">
 		<a class="fa fa-link" href="/2014/05/10/template">  查看全文&hellip;</a>
@@ -195,7 +196,7 @@ def current_datetime(request):
 <p>1.适合于数据量小且静态的数据。在template中直接使用相关键值为标签：
 ` `</p>
 
-<pre><code>def test1(request):
+<div class="highlighter-rouge"><pre class="highlight"><code>def test1(request):
     return render(request,'test/raw.htm',{
                 'name':'Enm',
                 'age':22,
@@ -203,6 +204,7 @@ def current_datetime(request):
                 'ship_date': datetime.datetime.now(),
                 'ordered_warranty': False})
 </code></pre>
+</div>
 
 	<div class="read_more">
 		<a class="fa fa-link" href="/2014/05/03/view_render">  查看全文&hellip;</a>
@@ -225,7 +227,7 @@ def current_datetime(request):
 
 <ul>
   <li>
-    <p>首先下载<code>ruby</code><a href="http://rubyinstaller.org/downloads/">安装ruby download</a> ，然后下载<strong>DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe</strong>。安装完<code>ruby</code>后，再安装<code>rubyGems</code>:运行<code>gem update --system</code>即可。</p>
+    <p>首先下载<code class="highlighter-rouge">ruby</code><a href="http://rubyinstaller.org/downloads/">安装ruby download</a> ，然后下载<strong>DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe</strong>。安装完<code class="highlighter-rouge">ruby</code>后，再安装<code class="highlighter-rouge">rubyGems</code>:运行<code class="highlighter-rouge">gem update --system</code>即可。</p>
   </li>
   <li>
     <p>解压DevKit，然后命令行cd到该目录，运行</p>

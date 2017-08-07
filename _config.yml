@@ -5,7 +5,7 @@ markdown: kramdown
 kramdown:
   input: GFM                            # use Github Flavored Markdown !important
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
-highlighter: pygments
+highlighter: rouge
 #mardown: redcarpet
 
 safe: false

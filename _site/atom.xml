@@ -4,7 +4,7 @@
  <title>七夜Blog</title>
  <link href="http://imqiye.com/" rel="self"/>
  <link href="http://imqiye.com"/>
- <updated>2017-08-07T14:39:09+08:00</updated>
+ <updated>2017-08-07T14:45:14+08:00</updated>
  <id>http://imqiye.com</id>
  <author>
    <name>七夜</name>
@@ -46,58 +46,63 @@
 
 &lt;p&gt;于是：&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;1.首先我们想到的是直接把数据硬编码到html代码里面，然后通过&lt;code&gt;HttpResponse&lt;/code&gt;对象传递给浏览器进行渲染：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1.首先我们想到的是直接把数据硬编码到html代码里面，然后通过&lt;code class=&quot;highlighter-rouge&quot;&gt;HttpResponse&lt;/code&gt;对象传递给浏览器进行渲染：&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;from django.http import HttpResponse
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;from django.http import HttpResponse
 import datetime
 
 def current_datetime(request):
     now = datetime.datetime.now()
-    html = &quot;&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;It is now %s.&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&quot; % now
+    html = &quot;&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;&lt;/span&gt;It is now %s.&lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;&quot; % now
     return HttpResponse(html)
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;!--break--&gt;
 
 &lt;p&gt;但是很明显这种方法不适合生产环境，你不可能把整个html页面都硬编码在view里面，因为这显得既愚蠢又低效。对于template的改动很明显要比view频繁得多，这种方式意味着你想更改页面表现时都必须得改动python代码，并且前后端无法同步开发。于是有了第二种方式：&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;2.把html代码分离成独立的模板，通过加载模板文件进行渲染，这样可以实现前后端分离：&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;   #view
-from django.shortcuts import render_to_response
-import datetime
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;   &lt;span class=&quot;c&quot;&gt;#view&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;django.shortcuts&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;render_to_response&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;datetime&lt;/span&gt;
 
-def current_datetime(request):
-    now = datetime.datetime.now()
-    return render_to_response('current_datetime.html', {'current_date': now})
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;current_datetime&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;datetime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;datetime&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;render_to_response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'current_datetime.html'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'current_date'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
 
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;pre&gt;&lt;code&gt;#template
-&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;It is now .&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#template
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&amp;gt;&amp;lt;body&amp;gt;&lt;/span&gt;It is now .&lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;p&gt;通过render()传递数据给template的方式在上一篇文章有列举出来。这种模式的好处很明显。但我们又遇到一个问题：&lt;strong&gt;假如我的网站有100个页面，那我是不是要写100个template呢？&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;我们知道这样是愚蠢。编程中有一个很重要的思想就是–&lt;strong&gt;最大限度地实现代码重用。&lt;/strong&gt; 而我们写100个页面的重复代码可能已经超过40%了，这不但费时费力，你还可能见笑于大方之家。所以我们有一种优雅的解决方式：&lt;strong&gt;include&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;strong&gt;(1). 把重用代码分离出来，比如header.html,footer.html,sidebar.html；然后&lt;code&gt;include&lt;/code&gt;到content.html中。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;(1). 把重用代码分离出来，比如header.html,footer.html,sidebar.html；然后&lt;code class=&quot;highlighter-rouge&quot;&gt;include&lt;/code&gt;到content.html中。&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;# header.html
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# header.html
 
-&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
-&amp;lt;html lang=&quot;en&quot;&amp;gt;
-&amp;lt;head&amp;gt;
-    &amp;lt;title&amp;gt;The current time&amp;lt;/title&amp;gt;
-&amp;lt;/head&amp;gt;
+&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;lang=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;en&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;The current time&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;pre&gt;&lt;code&gt;    # footer.html
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    # footer.html
 
         &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
     &amp;lt;/body&amp;gt;
     &amp;lt;/html&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;pre&gt;&lt;code&gt;# include 'header' and 'footer'
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# include 'header' and 'footer'
 
 { include 'header.html' %}
 &amp;lt;body&amp;gt;
@@ -105,64 +110,68 @@ def current_datetime(request):
     &amp;lt;p&amp;gt;It is now .&amp;lt;/p&amp;gt;
 { include 'footer.html' %}
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;没错，这样很优雅，可以实现代码重用。但是仍然有个问题：当代码中存在哪怕一个标记不同时，这部分代码你就无法分离出来，这导致了你仍然需要重复大量的代码。比如：&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;# first page
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# first page
 
-&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
-&amp;lt;html lang=&quot;en&quot;&amp;gt;
-&amp;lt;head&amp;gt;
-    &amp;lt;title&amp;gt;The current time&amp;lt;/title&amp;gt;
-&amp;lt;/head&amp;gt;
-&amp;lt;body&amp;gt;
-    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
-    &amp;lt;p&amp;gt;It is now .&amp;lt;/p&amp;gt;
+&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;lang=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;en&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;The current time&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;h1&amp;gt;&lt;/span&gt;My helpful timestamp site&lt;span class=&quot;nt&quot;&gt;&amp;lt;/h1&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;p&amp;gt;&lt;/span&gt;It is now .&lt;span class=&quot;nt&quot;&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
 
-    &amp;lt;hr&amp;gt;
-    &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
-&amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;p&amp;gt;&lt;/span&gt;Thanks for visiting my site.&lt;span class=&quot;nt&quot;&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;# second page
+&lt;/div&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# second page
 
-&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
-&amp;lt;html lang=&quot;en&quot;&amp;gt;
-&amp;lt;head&amp;gt;
-    &amp;lt;title&amp;gt;Future time&amp;lt;/title&amp;gt;
-&amp;lt;/head&amp;gt;
-&amp;lt;body&amp;gt;
-    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
-    &amp;lt;p&amp;gt;In  hour(s), it will be .&amp;lt;/p&amp;gt;
+&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;lang=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;en&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;Future time&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;h1&amp;gt;&lt;/span&gt;My helpful timestamp site&lt;span class=&quot;nt&quot;&gt;&amp;lt;/h1&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;p&amp;gt;&lt;/span&gt;In  hour(s), it will be .&lt;span class=&quot;nt&quot;&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
 
-    &amp;lt;hr&amp;gt;
-    &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
-&amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;p&amp;gt;&lt;/span&gt;Thanks for visiting my site.&lt;span class=&quot;nt&quot;&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;这两个页面中&lt;code&gt;&amp;lt;title&amp;gt;&lt;/code&gt;不同，意味着&lt;code&gt;&amp;lt;title&amp;gt;&lt;/code&gt;以下的部分都不能并入&lt;code&gt;header.html&lt;/code&gt;中，哪怕下面仍然存在大量的重复代码。所以有了更优雅的解决办法：&lt;strong&gt;extends&lt;/strong&gt; – inculde的逆向思维。&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;这两个页面中&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;title&amp;gt;&lt;/code&gt;不同，意味着&lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;title&amp;gt;&lt;/code&gt;以下的部分都不能并入&lt;code class=&quot;highlighter-rouge&quot;&gt;header.html&lt;/code&gt;中，哪怕下面仍然存在大量的重复代码。所以有了更优雅的解决办法：&lt;strong&gt;extends&lt;/strong&gt; – inculde的逆向思维。&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;(2). 我们把模板里面的‘不同代码’进行定义，相同的代码保存为base模板&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;
-&amp;lt;html lang=&quot;en&quot;&amp;gt;
-&amp;lt;head&amp;gt;
-    &amp;lt;title&amp;gt;{ block title %}{ endblock %}&amp;lt;/title&amp;gt;
-&amp;lt;/head&amp;gt;
-&amp;lt;body&amp;gt;
-    &amp;lt;h1&amp;gt;My helpful timestamp site&amp;lt;/h1&amp;gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;cp&quot;&gt;&amp;lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;html&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;lang=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;en&quot;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;title&amp;gt;&lt;/span&gt;{ block title %}{ endblock %}&lt;span class=&quot;nt&quot;&gt;&amp;lt;/title&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;body&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;h1&amp;gt;&lt;/span&gt;My helpful timestamp site&lt;span class=&quot;nt&quot;&gt;&amp;lt;/h1&amp;gt;&lt;/span&gt;
     { block content %}{ endblock %}
     { block footer %}
-    &amp;lt;hr&amp;gt;
-    &amp;lt;p&amp;gt;Thanks for visiting my site.&amp;lt;/p&amp;gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;hr&amp;gt;&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;lt;p&amp;gt;&lt;/span&gt;Thanks for visiting my site.&lt;span class=&quot;nt&quot;&gt;&amp;lt;/p&amp;gt;&lt;/span&gt;
     { endblock %}
-&amp;lt;/body&amp;gt;
-&amp;lt;/html&amp;gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;p&gt;此时&lt;code&gt;base.html&lt;/code&gt;变成了一个骨架，你可以把需要的内容填充进去即可，这最大限度实现了代码重用。&lt;/p&gt;
+&lt;p&gt;此时&lt;code class=&quot;highlighter-rouge&quot;&gt;base.html&lt;/code&gt;变成了一个骨架，你可以把需要的内容填充进去即可，这最大限度实现了代码重用。&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;    # first page
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    # first page
 
     { extends &quot;base.html&quot; %}
 
@@ -172,8 +181,9 @@ def current_datetime(request):
     &amp;lt;p&amp;gt;It is now .&amp;lt;/p&amp;gt;
     { endblock %}
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
-&lt;pre&gt;&lt;code&gt;    # second page
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    # second page
 
     { extends &quot;base.html&quot; %}
 
@@ -183,6 +193,7 @@ def current_datetime(request):
     &amp;lt;p&amp;gt;In  hour(s), it will be .&amp;lt;/p&amp;gt;
     { endblock %}
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;woo! 简单优雅！这是Template设计的思想历程。&lt;/p&gt;
 </content>
@@ -202,7 +213,7 @@ def current_datetime(request):
 &lt;p&gt;1.适合于数据量小且静态的数据。在template中直接使用相关键值为标签：
 ` `&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;def test1(request):
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def test1(request):
     return render(request,'test/raw.htm',{
                 'name':'Enm',
                 'age':22,
@@ -210,11 +221,12 @@ def current_datetime(request):
                 'ship_date': datetime.datetime.now(),
                 'ordered_warranty': False})
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;!--break--&gt;
 
 &lt;p&gt;2.通过调用属性的方式传递整个dictionary。但在template中必须使用属性方式：{{ &lt;strong&gt;person.&lt;/strong&gt; name }},{\% for i,k in &lt;strong&gt;dict.&lt;/strong&gt; items \%}&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;def test2():
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def test2():
     person = {  'name':'Enm',
                 'age':22,
                 'company': 'Outdoor Equipment',
@@ -224,12 +236,13 @@ def current_datetime(request):
     dict = {&quot;name&quot;:&quot;enm&quot;,&quot;age&quot;:&quot;21&quot;,&quot;school&quot;:&quot;szu&quot;}
     return render(request,'test/raw.htm',{ 'person':person, 'dict':dict})
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;3.使用&lt;strong&gt;locals(),locals()&lt;/strong&gt; 是个字典，直接赋值给变量。很明显这种方式更加优雅和便捷，但缺点就是它会把所有的dictionary都传递，也就是说它默认传递的值可能会比你预想中的多。&lt;/p&gt;
 
 &lt;p&gt;template中仍然必须使用属性方式：{{ &lt;strong&gt;person.&lt;/strong&gt; name }},{\% for i,k in &lt;strong&gt;dict.&lt;/strong&gt; items \%}&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;def test3():
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;def test3():
     person = {  'name': 'Enm',
                 'age':22,
                 'company': 'Outdoor Equipment',
@@ -239,6 +252,7 @@ def current_datetime(request):
     dict = {&quot;name&quot;:&quot;enm&quot;,&quot;age&quot;:&quot;21&quot;,&quot;school&quot;:&quot;szu&quot;}
     return render(request,'test/raw.htm',locals())
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 </content>
  </entry>
  
@@ -253,7 +267,7 @@ def current_datetime(request):
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;首先下载&lt;code&gt;ruby&lt;/code&gt;&lt;a href=&quot;http://rubyinstaller.org/downloads/&quot;&gt;安装ruby download&lt;/a&gt; ，然后下载&lt;strong&gt;DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe&lt;/strong&gt;。安装完&lt;code&gt;ruby&lt;/code&gt;后，再安装&lt;code&gt;rubyGems&lt;/code&gt;:运行&lt;code&gt;gem update --system&lt;/code&gt;即可。&lt;/p&gt;
+    &lt;p&gt;首先下载&lt;code class=&quot;highlighter-rouge&quot;&gt;ruby&lt;/code&gt;&lt;a href=&quot;http://rubyinstaller.org/downloads/&quot;&gt;安装ruby download&lt;/a&gt; ，然后下载&lt;strong&gt;DevKit-mingw64-64-4.7.2-20130224-1432-sfx.exe&lt;/strong&gt;。安装完&lt;code class=&quot;highlighter-rouge&quot;&gt;ruby&lt;/code&gt;后，再安装&lt;code class=&quot;highlighter-rouge&quot;&gt;rubyGems&lt;/code&gt;:运行&lt;code class=&quot;highlighter-rouge&quot;&gt;gem update --system&lt;/code&gt;即可。&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;解压DevKit，然后命令行cd到该目录，运行&lt;/p&gt;
@@ -262,14 +276,15 @@ def current_datetime(request):
 
 &lt;!--break--&gt;
 
-&lt;pre&gt;&lt;code&gt; ruby dk.rb init
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ruby dk.rb init
  ruby dk.rb review 
  ruby dk.rb install
  gem install rdiscount --platform=ruby
 &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;DevKit安装完后，即可安装jekyll：&lt;code&gt;gem install jekyll&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;DevKit安装完后，即可安装jekyll：&lt;code class=&quot;highlighter-rouge&quot;&gt;gem install jekyll&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
 
 </content>
